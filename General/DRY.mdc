@@ -1,59 +1,48 @@
 ---
-description: This rule outlines the "Don't Repeat Yourself" (DRY) principle, focusing on the crucial distinction between knowledge duplication and mere code duplication. It provides guidance on when to apply DRY to enhance maintainability and when to allow for intentional duplication to avoid premature abstraction.
-globs:
-  - "**/*.js"
-  - "**/*.ts"
-  - "**/*.py"
-  - "**/*.java"
-  - "**/*.cs"
-  - "**/*.cpp"
+description: Use when reviewing or writing code to enforce the DRY principle while avoiding premature abstraction and over-engineering.
+alwaysApply: true
 ---
-# The "Don't Repeat Yourself" (DRY) Principle
 
-The "Don't Repeat Yourself" (DRY) principle is a foundational concept in software engineering. Its core definition is that "every piece of knowledge must have a single, unambiguous, authoritative representation within a system". This principle applies to more than just source code; it also includes database schemas, documentation, and test plans.
+# DRY Principle (Don't Repeat Yourself)
 
-## 1. Knowledge vs. Code Duplication
+## Core Concept
+- Every piece of knowledge should have a **single, unambiguous, authoritative representation**.
+- Focus on eliminating **knowledge duplication**, not just literal code duplication.
+- Evaluate intent: two code blocks can look similar but represent different knowledge (not a violation).
 
-A key nuance of the DRY principle is the distinction between duplicating knowledge and duplicating code.
+## Benefits of DRY
+- **Maintainability**: fix bugs or update logic in one place instead of many.
+- **Consistency**: reduces risk of inconsistencies across the codebase.
+- **Reusability**: encourages modular, reusable components.
+- **Collaboration**: clearer, cleaner code that’s easier to review and onboard.
 
-* **Knowledge Duplication (a DRY violation):** This occurs when the same underlying logic or concept is repeated in multiple places. For example, two different functions that calculate a person's age but use slightly different algorithms represent a duplication of knowledge. A change to the business rule of age calculation would require updates to both functions, risking inconsistency and bugs.
+## Strategies to Apply DRY
+- **Abstraction & Encapsulation**: extract repeated logic into functions, classes, or methods with clear names.
+- **Modular Design & SoC**: split systems into modules with distinct responsibilities (e.g., MVC).
+- **Single Source of Truth (SSOT)**: centralize constants, config, and business rules; avoid scattering values.
+- **Reusable Libraries/Modules**: package and import common utilities; don’t reimplement.
+- **Composition & OOP Features**: use classes, inheritance, and composition carefully to reuse behaviour.
 
-* **Code Duplication (not a DRY violation):** This happens when identical blocks of code exist, but the purpose behind them is fundamentally different. For example, two validation functions that coincidentally have the same rules but serve different purposes (e.g., one for a user password and one for a security token) are not a DRY violation because their requirements are likely to diverge in the future.
+## Pragmatic Boundaries
+- **Avoid Premature Abstraction**: don’t unify code until a clear pattern has emerged.
+- **Rule of Three**: allow code duplication the first two times; refactor on the third.
+- **WET (Write Everything Twice)**: temporary duplication is acceptable to preserve clarity.
+- **AHA (Avoid Hasty Abstractions)**: let abstractions emerge from real, repeated need.
 
-The correct application of DRY requires contextual judgment, not just a syntactic analysis of identical code.
+## Acceptable Duplication
+- When clarity/readability is improved (small self-contained code).
+- When similar code will **diverge** in the future (keep separate).
+- In **tests**, where duplication is less harmful.
+- In **short-lived scripts/prototypes**, where abstraction isn’t worth the effort.
+- For **performance**, where eliminating function calls matters.
 
-## 2. Benefits of a DRY Codebase
+## Pitfalls to Avoid
+- Premature abstractions that require complex conditionals.
+- Over-generalizing code that harms readability.
+- Forcing unrelated concerns into the same abstraction.
 
-Adhering to the DRY principle offers significant benefits:
-
-* **Enhanced Maintainability and Consistency:** By consolidating logic into a single location, a developer can fix bugs or make updates in one place, ensuring consistency throughout the system.
-* **Reduced Risk of Errors:** Centralized logic reduces the risk of errors because any necessary change or bug fix will be applied consistently everywhere it is used, eliminating the possibility of inconsistencies.
-* **Improved Reusability and Modularity:** DRY encourages the creation of modular components that can be reused across different parts of the application or even in future projects.
-* **Aiding Collaboration:** DRY code is typically cleaner and easier to read, which reduces the cognitive load for developers and makes code reviews more productive.
-
-## 3. Strategies for Implementation
-
-DRY can be applied using several language-agnostic strategies:
-
-* **Functions and Methods:** The simplest way to consolidate repeated logic is by encapsulating it in a reusable function or method.
-* **Object-Oriented Programming (OOP):** OOP principles like classes, objects, and composition can group related data and behavior, promoting code reuse.
-* **Modular Design and Separation of Concerns (SoC):** At an architectural level, break down a large system into distinct, interchangeable modules. SoC, as seen in the Model-View-Controller (MVC) pattern, prevents logic from being duplicated across different layers of an application.
-* **Single Source of Truth (SSOT):** This ensures that every piece of information, from a business rule to a configuration setting, is stored in one authoritative place.
-
-## 4. Navigating the Nuances: The Dangers of Overzealous DRY
-
-A mature understanding of DRY acknowledges that it is not an absolute rule. Blindly applying the principle can lead to **premature abstraction** and **over-engineering**.
-
-* **Premature Abstraction:** This occurs when developers attempt to unify similar-looking code before the problem is fully understood. This can result in a complex, brittle abstraction that is harder to test, debug, and modify than the original duplicated code. As Sandi Metz famously said, "Duplication is far cheaper than the wrong abstraction".
-
-To avoid these pitfalls, a more pragmatic approach is recommended:
-
-* **The "Rule of Three":** This rule suggests that a developer should tolerate a code duplication for the first two times it appears, but only consider refactoring it into an abstraction on the third instance. This approach prevents unnecessary abstractions and allows a clearer, more stable pattern to emerge over time.
-
-## 5. Acceptable Duplication
-
-There are specific scenarios where duplication is not only acceptable but recommended:
-
-* **For Clarity and Readability:** A small, self-contained duplication can sometimes be more readable than a complex abstraction with conditional logic.
-* **For Diverging Requirements:** If two similar code blocks are likely to evolve independently, creating a single abstraction will lead to future maintenance challenges.
-* **In Test Code:** Duplication is generally more acceptable in test code because a change to one test does not logically necessitate a change to another.
+## Practical Guidance
+- Prefer small, well-named helpers over monolithic abstractions.
+- Continuously refactor as patterns emerge, but don’t over-engineer.
+- Balance DRY with **KISS (Keep It Simple, Stupid)** and **YAGNI (You Aren’t Gonna Need It)**.
+- Duplication is cheaper than the wrong abstraction; optimise for clarity first.
