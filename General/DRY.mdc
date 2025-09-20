@@ -10,50 +10,50 @@ globs:
 ---
 # The "Don't Repeat Yourself" (DRY) Principle
 
-The "Don't Repeat Yourself" (DRY) principle is a foundational concept in software engineering[cite: 157]. Its core definition is that "every piece of knowledge must have a single, unambiguous, authoritative representation within a system"[cite: 157]. This principle applies to more than just source code; it also includes database schemas, documentation, and test plans[cite: 157].
+The "Don't Repeat Yourself" (DRY) principle is a foundational concept in software engineering. Its core definition is that "every piece of knowledge must have a single, unambiguous, authoritative representation within a system". This principle applies to more than just source code; it also includes database schemas, documentation, and test plans.
 
 ## 1. Knowledge vs. Code Duplication
 
-A key nuance of the DRY principle is the distinction between duplicating knowledge and duplicating code[cite: 161].
+A key nuance of the DRY principle is the distinction between duplicating knowledge and duplicating code.
 
-* **Knowledge Duplication (a DRY violation):** This occurs when the same underlying logic or concept is repeated in multiple places[cite: 162]. For example, two different functions that calculate a person's age but use slightly different algorithms represent a duplication of knowledge[cite: 163]. A change to the business rule of age calculation would require updates to both functions, risking inconsistency and bugs[cite: 163].
+* **Knowledge Duplication (a DRY violation):** This occurs when the same underlying logic or concept is repeated in multiple places. For example, two different functions that calculate a person's age but use slightly different algorithms represent a duplication of knowledge. A change to the business rule of age calculation would require updates to both functions, risking inconsistency and bugs.
 
-* **Code Duplication (not a DRY violation):** This happens when identical blocks of code exist, but the purpose behind them is fundamentally different[cite: 165, 166]. For example, two validation functions that coincidentally have the same rules but serve different purposes (e.g., one for a user password and one for a security token) are not a DRY violation because their requirements are likely to diverge in the future[cite: 166, 167].
+* **Code Duplication (not a DRY violation):** This happens when identical blocks of code exist, but the purpose behind them is fundamentally different. For example, two validation functions that coincidentally have the same rules but serve different purposes (e.g., one for a user password and one for a security token) are not a DRY violation because their requirements are likely to diverge in the future.
 
-The correct application of DRY requires contextual judgment, not just a syntactic analysis of identical code[cite: 168].
+The correct application of DRY requires contextual judgment, not just a syntactic analysis of identical code.
 
 ## 2. Benefits of a DRY Codebase
 
 Adhering to the DRY principle offers significant benefits:
 
-* **Enhanced Maintainability and Consistency:** By consolidating logic into a single location, a developer can fix bugs or make updates in one place, ensuring consistency throughout the system[cite: 177].
-* **Reduced Risk of Errors:** Centralized logic reduces the risk of errors because any necessary change or bug fix will be applied consistently everywhere it is used, eliminating the possibility of inconsistencies[cite: 179].
-* **Improved Reusability and Modularity:** DRY encourages the creation of modular components that can be reused across different parts of the application or even in future projects[cite: 182].
-* **Aiding Collaboration:** DRY code is typically cleaner and easier to read, which reduces the cognitive load for developers and makes code reviews more productive[cite: 184].
+* **Enhanced Maintainability and Consistency:** By consolidating logic into a single location, a developer can fix bugs or make updates in one place, ensuring consistency throughout the system.
+* **Reduced Risk of Errors:** Centralized logic reduces the risk of errors because any necessary change or bug fix will be applied consistently everywhere it is used, eliminating the possibility of inconsistencies.
+* **Improved Reusability and Modularity:** DRY encourages the creation of modular components that can be reused across different parts of the application or even in future projects.
+* **Aiding Collaboration:** DRY code is typically cleaner and easier to read, which reduces the cognitive load for developers and makes code reviews more productive.
 
 ## 3. Strategies for Implementation
 
 DRY can be applied using several language-agnostic strategies:
 
-* **Functions and Methods:** The simplest way to consolidate repeated logic is by encapsulating it in a reusable function or method[cite: 189].
-* **Object-Oriented Programming (OOP):** OOP principles like classes, objects, and composition can group related data and behavior, promoting code reuse[cite: 190].
-* **Modular Design and Separation of Concerns (SoC):** At an architectural level, break down a large system into distinct, interchangeable modules[cite: 193]. SoC, as seen in the Model-View-Controller (MVC) pattern, prevents logic from being duplicated across different layers of an application[cite: 195].
-* **Single Source of Truth (SSOT):** This ensures that every piece of information, from a business rule to a configuration setting, is stored in one authoritative place[cite: 198].
+* **Functions and Methods:** The simplest way to consolidate repeated logic is by encapsulating it in a reusable function or method.
+* **Object-Oriented Programming (OOP):** OOP principles like classes, objects, and composition can group related data and behavior, promoting code reuse.
+* **Modular Design and Separation of Concerns (SoC):** At an architectural level, break down a large system into distinct, interchangeable modules. SoC, as seen in the Model-View-Controller (MVC) pattern, prevents logic from being duplicated across different layers of an application.
+* **Single Source of Truth (SSOT):** This ensures that every piece of information, from a business rule to a configuration setting, is stored in one authoritative place.
 
 ## 4. Navigating the Nuances: The Dangers of Overzealous DRY
 
-A mature understanding of DRY acknowledges that it is not an absolute rule[cite: 204]. Blindly applying the principle can lead to **premature abstraction** and **over-engineering**[cite: 207].
+A mature understanding of DRY acknowledges that it is not an absolute rule. Blindly applying the principle can lead to **premature abstraction** and **over-engineering**.
 
-* **Premature Abstraction:** This occurs when developers attempt to unify similar-looking code before the problem is fully understood[cite: 207]. This can result in a complex, brittle abstraction that is harder to test, debug, and modify than the original duplicated code[cite: 207, 208]. As Sandi Metz famously said, "Duplication is far cheaper than the wrong abstraction"[cite: 208].
+* **Premature Abstraction:** This occurs when developers attempt to unify similar-looking code before the problem is fully understood. This can result in a complex, brittle abstraction that is harder to test, debug, and modify than the original duplicated code. As Sandi Metz famously said, "Duplication is far cheaper than the wrong abstraction".
 
 To avoid these pitfalls, a more pragmatic approach is recommended:
 
-* **The "Rule of Three":** This rule suggests that a developer should tolerate a code duplication for the first two times it appears, but only consider refactoring it into an abstraction on the third instance[cite: 212]. This approach prevents unnecessary abstractions and allows a clearer, more stable pattern to emerge over time[cite: 213].
+* **The "Rule of Three":** This rule suggests that a developer should tolerate a code duplication for the first two times it appears, but only consider refactoring it into an abstraction on the third instance. This approach prevents unnecessary abstractions and allows a clearer, more stable pattern to emerge over time.
 
 ## 5. Acceptable Duplication
 
 There are specific scenarios where duplication is not only acceptable but recommended:
 
-* **For Clarity and Readability:** A small, self-contained duplication can sometimes be more readable than a complex abstraction with conditional logic[cite: 218].
-* **For Diverging Requirements:** If two similar code blocks are likely to evolve independently, creating a single abstraction will lead to future maintenance challenges[cite: 219].
-* **In Test Code:** Duplication is generally more acceptable in test code because a change to one test does not logically necessitate a change to another[cite: 220, 221].
+* **For Clarity and Readability:** A small, self-contained duplication can sometimes be more readable than a complex abstraction with conditional logic.
+* **For Diverging Requirements:** If two similar code blocks are likely to evolve independently, creating a single abstraction will lead to future maintenance challenges.
+* **In Test Code:** Duplication is generally more acceptable in test code because a change to one test does not logically necessitate a change to another.

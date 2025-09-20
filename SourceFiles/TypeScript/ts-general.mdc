@@ -1,0 +1,179 @@
+### Comprehensive TypeScript Rules
+
+This Cursor rule provides a detailed, cohesive guide to best practices in TypeScript development. It covers everything from foundational compiler settings and type safety to advanced data modeling and code organization, ensuring the AI assistant generates code that is both robust and consistent with modern standards.
+
+````mdc
+---
+description: A comprehensive guide to TypeScript best practices, covering strict mode, type safety, data modeling with 'type' and 'interface', and modern language features to ensure the AI generates clean, predictable, and maintainable code.
+globs:
+  - "**/*.ts"
+  - "**/*.tsx"
+---
+# TypeScript Best Practices and Style Guide
+
+This guide outlines a set of best practices and principles for writing high-quality TypeScript code. Adhering to these rules will ensure the codebase is robust, maintainable, and scalable. The core philosophy is to leverage the TypeScript compiler's features to their fullest extent to catch errors early and enhance developer experience.
+
+## 1. The Foundation: Embracing Strictness and Type Safety
+
+A high-quality codebase in TypeScript begins with a strong foundation built on the intentional and proactive use of its type system.
+
+### 1.1. Starting with Strict Mode: The Cornerstone
+The most impactful decision for a new TypeScript project is enabling strict mode in the `tsconfig.json` file. The `strict: true` compiler option is a non-negotiable best practice that activates a suite of type-checking flags, eliminating entire classes of common bugs at compile time.
+* **`noImplicitAny`**: This flag prevents TypeScript from inferring the `any` type for variables, which prevents type-checking holes.
+* **`strictNullChecks`**: This is one of TypeScript's most powerful features. It ensures that `null` or `undefined` values cannot be assigned to variables unless those values are explicitly part of the type's union (e.g., `string | null`). This proactively catches a large number of common null reference errors.
+* **`noUnusedLocals` and `noUnusedParameters`**: These flags identify dead code and unused function arguments, respectively, making the codebase cleaner and more focused.
+
+### 1.2. Escaping the `any` Trap: `unknown` to the Rescue
+While `any` can be useful for migrating a JavaScript project, its continued use is a liability as it disables type checking and undermines the purpose of TypeScript. For situations where the type is truly uncertain, the `unknown` type is the safer, more intentional alternative. Unlike `any`, `unknown` forces an explicit type check before any operation, ensuring runtime safety.
+
+**Bad:**
+```typescript
+function processInput(data: any) {
+  // This could fail at runtime if 'data' is not a string
+  console.log(data.trim());
+}
+````
+
+**Good:**
+
+```typescript
+function processInput(data: unknown) {
+  if (typeof data === 'string') {
+    // The type is now known, and the operation is safe
+    console.log(data.trim());
+  } else {
+    // Handle the unknown type gracefully
+    console.error("Input is not a string.");
+  }
+}
+```
+
+### 1.3. Type Inference vs. Explicit Annotation: The Balancing Act
+
+TypeScript's powerful type inference engine should be leveraged for simple variable declarations. However, explicit type annotations are a superior practice for function parameters and return types, especially for public APIs. This serves as a form of self-documentation, making the code's purpose and expected inputs/outputs clear without requiring a developer to read the entire function body.
+
+-----
+
+## 2\. Data Modeling: Structuring Your Application with Types
+
+The way data is defined and structured has significant implications for long-term maintainability.
+
+### 2.1. Interfaces vs. Type Aliases: The Great Debate
+
+The choice between `interface` and `type` is a common debate. While often interchangeable, a `type` alias is generally a more versatile and predictable choice.
+
+  * **`interface` Strengths**: Its primary advantage is **declaration merging**, which is useful for extending third-party library types.
+  * **`type` Strengths**: It can define a wide range of types beyond object shapes, including union types (`'A' | 'B'`) and intersection types (`A & B`). It also prevents accidental declaration merging, which can lead to hard-to-find bugs.
+
+**Recommendation**: Default to using `type` for its versatility and predictability. Reserve `interface` for two specific use cases: when defining a public contract for a class that can be implemented or when declaration merging is explicitly needed.
+
+### 2.2. Enums and Their Alternatives: A Modern Perspective
+
+TypeScript's `enum` feature is convenient but introduces a **runtime artifact** into the compiled JavaScript bundle, which can increase bundle size and potentially introduce unexpected behavior like reverse mapping.
+
+  * **Recommendation**: For most cases, a **union type with a `const` assertion** is the preferred alternative. It provides the same strong type safety and IDE autocompletion as an enum but has zero runtime cost. Only use a regular `enum` when you have a specific need for a runtime object that can be passed around and accessed like a dictionary.
+
+### 2.3. Generics: The Power of Reusable Components
+
+Use generics to create reusable components that work with a variety of types while maintaining full type safety. Generics reduce code duplication and enhance flexibility. To ensure generic types have necessary properties, use the `extends` keyword to add constraints.
+
+-----
+
+## 3\. Code Style, Formatting, and Readability
+
+A consistent and opinionated coding style is crucial for any team to minimize cognitive load and prevent disagreements.
+
+### 3.1. General Coding Style
+
+  * **Variable Declaration**: Strictly prefer **`const`** for all variable declarations by default and only use **`let`** for variables that need to be reassigned. Avoid the legacy `var` keyword.
+  * **Literal Syntax**: Always use literal syntax for object and array creation (`{}` and `[]`).
+  * **Spread and Destructuring**: Use spread syntax (`...`) and destructuring assignments to create clean, readable code.
+
+### 3.2. Imports and Exports
+
+  * **Named Exports over Default Exports**: Prefer named exports over default exports to improve name consistency across a project. The TypeScript compiler will throw an error if a named export is misspelled, which prevents silent failures that can occur with default exports.
+  * **Import Organization**: A consistent order for imports improves readability. A common convention is to group imports by type (e.g., node modules, third-party libraries, local project files), separating each group with a blank line.
+
+### 3.3. Naming Conventions
+
+Follow a clear, consistent naming strategy for clarity and self-documentation.
+
+  * **Variables & Functions**: Use `camelCase`.
+  * **Classes, Interfaces, & Types**: Use `PascalCase`.
+  * **Constants**: Use `SCREAMING_SNAKE_CASE`.
+  * **Boolean Variables**: Prefix with `is`, `has`, or `can` (e.g., `isActive`).
+  * **Avoid**: Avoid abbreviations that are ambiguous and redundant context (e.g., `userName` in a `User` class).
+
+-----
+
+## 4\. Advanced Concepts & Application Logic
+
+### 4.1. Robust Error Handling: The 5 Commandments
+
+A mature application handles errors gracefully and provides sufficient information for debugging.
+
+1.  **Throw Error Instances**: Always throw instances of `Error` or a custom subclass to ensure a stack trace is attached. Throwing strings or other primitive values is a liability.
+2.  **Don't Lose Your Stack Trace**: When catching and re-throwing an error, use the `cause` property to preserve the original stack trace.
+3.  **Use Constant Error Messages**: For proper monitoring, error messages should be constant. Attach dynamic data to the error's `context` or `metadata` property instead.
+4.  **Provide the Right Amount of Context**: An error should contain enough context to be useful for debugging, such as relevant function parameters or resource identifiers.
+5.  **Don't Throw for Expected Problems**: Exceptions are for truly exceptional cases. For expected failures (e.g., invalid user input), return a value that represents the failure state instead of throwing an exception.
+
+The `ensureError` utility function is a recommended pattern for handling unknown caught errors. It ensures every value in a `catch` block is a usable `Error` object with a stack trace.
+
+```typescript
+function ensureError(value: unknown): Error {
+  if (value instanceof Error) {
+    return value;
+  }
+  let stringified = '[Unable to stringify the thrown value]';
+  try {
+    stringified = JSON.stringify(value);
+  } catch {}
+  return new Error(`Value was thrown as is, not through an Error: ${stringified}`);
+}
+
+try {
+  //... a fragile operation
+} catch (err) {
+  const error = ensureError(err);
+  console.log(error.message);
+}
+```
+
+### 4.2. Tooling for Consistency
+
+Use a formatter like **Prettier** for all code formatting concerns and a linter like **ESLint** for code quality issues and potential bugs. They are complementary tools. The `eslint-config-prettier` plugin is used to disable any conflicting ESLint rules. The `typescript-eslint` plugin is the bridge that allows ESLint to understand and lint TypeScript code.
+
+The following `tsconfig.json` configuration brings all the principles of a strict, modern TypeScript project together and is a foundational blueprint for any new project.
+
+```json
+{
+  "compilerOptions": {
+    /* Type Checking */
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    /* Modules */
+    "module": "es2020",
+    "target": "es2020",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    /* Emit */
+    "outDir": "./dist",
+    "sourceMap": true,
+    /* Language and Library */
+    "lib": ["es2020", "dom"],
+    /* Advanced Options */
+    "skipLibCheck": true,
+    "rootDir": "./src"
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}
+```
