@@ -1,0 +1,147 @@
+---
+description: Use when editing Node.js code to enforce a core-only, secure, and maintainable approach using built-in APIs and disciplined runtime practices.
+globs: ["**/*.js", "**/*.mjs", "**/*.cjs", "**/*.ts","**/package.json"]
+---
+
+# Node.js (Core-Only) Best Practices — Unified Rule
+
+> Philosophy: Prefer **built-in Node APIs** over third-party runtime deps. Keep the attack surface small, deployments lean, and understanding deep. Dev-only tooling is acceptable, kept minimal.
+
+## Project Structure & Naming
+- Prefer a predictable layout: `src/` (app code), `test/` (mirrors src), `bin/` (CLIs), `dist/` (build output, gitignored).
+- Use **kebab-case** file names (`user-service.js`); keep module boundaries clear and stable.
+
+## Module System (ESM vs CJS)
+- Choose one per package via `package.json` `"type"`: `"module"` for ESM; omit or set `"commonjs"` for CJS.
+- Use explicit extensions when needed: `.mjs` (ESM), `.cjs` (CJS). `import()` works dynamically in both.
+- Prefer **ESM** for new code; prefer **named exports** and avoid globals.
+
+## ESM Pathing (No __dirname)
+- In ESM, derive paths from `import.meta.url`:
+  ```js
+  import { fileURLToPath } from 'node:url';
+  import { dirname, join } from 'node:path';
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = dirname(__filename);
+  const dataPath = join(__dirname, 'data.json');
+````
+
+## Runtime Flags & Source Maps
+
+* Use `NODE_OPTIONS` to pass Node flags without changing start commands (e.g., CI/staging).
+* Enable `--enable-source-maps` when you need meaningful stack traces from transpiled code; be mindful of perf.
+
+  ```json
+  // package.json
+  {
+    "scripts": {
+      "start": "NODE_OPTIONS=--enable-source-maps node ./dist/index.js",
+      "test": "node --test"
+    }
+  }
+  ```
+
+## Error Handling & Reliability
+
+* Prefer `async/await` with `try/catch`; **never swallow** errors—log with context or rethrow.
+* Last-resort handlers **must exit**:
+
+  ```js
+  process.on('uncaughtException', (err) => { console.error(err); process.exit(1); });
+  process.on('unhandledRejection', (err) => { console.error(err); process.exit(1); });
+  ```
+
+## Timeouts & Cancellation
+
+* Enforce I/O time limits using AbortController:
+
+  ```js
+  const signal = AbortSignal.timeout(5000);
+  const data = await fs.readFile(filePath, { signal });
+  ```
+* Prefer `AbortSignal.any([...])` to combine user-cancel + timeout semantics where supported.
+
+## Graceful Shutdown (SIGTERM)
+
+* On `SIGTERM`: stop accepting new work, close servers/resources, then `process.exit(0)`:
+
+  ```js
+  const server = http.createServer(...);
+  process.on('SIGTERM', () => {
+    server.close((err) => process.exit(err ? 1 : 0));
+  });
+  ```
+
+## Performance: Event Loop Discipline
+
+* Use **streams** and backpressure for large data; avoid buffering whole files in memory:
+
+  ```js
+  createReadStream('in').pipe(createWriteStream('out'));
+  // or: for await (const chunk of readable) { writable.write(chunk); }
+  ```
+* Choose concurrency primitive by workload:
+
+  * **`worker_threads`** for CPU-bound parallelism (keeps main loop responsive).
+  * **`child_process`** for external commands or full isolation.
+
+## Security Basics (Core-Only)
+
+* **Validate input** with built-ins (types, regex); treat all external input as untrusted.
+* **Crypto**: use `node:crypto` for hashing/tokens; avoid ad-hoc crypto:
+
+  ```js
+  import { createHash, randomBytes } from 'node:crypto';
+  const hash = createHash('sha256').update(secret).digest('hex');
+  const token = randomBytes(32).toString('hex');
+  ```
+* **Temp files**: avoid predictable names; prefer `fs.mkdtemp` with `os.tmpdir()` prefixes.
+
+## Testing & Debugging (Built-in)
+
+* Use the built-in runner:
+
+  ```js
+  // test/example.test.js
+  import test from 'node:test';
+  import assert from 'node:assert/strict';
+  test('works', () => assert.strictEqual(1 + 1, 2));
+  ```
+* Prefer `--inspect`/`--inspect-brk` and Chrome DevTools over `console.log` for deep debugging.
+
+## Diagnostics & Observability
+
+* Use `node:diagnostics_channel` for low-overhead, decoupled instrumentation:
+
+  ```js
+  import dc from 'node:diagnostics_channel';
+  const ch = dc.channel('app:event');
+  if (ch.hasSubscribers) ch.publish({ phase: 'start' });
+  ```
+
+## Configuration Manifests
+
+* **package.json**: set `type`, `exports`/`main`, `bin`, `engines`, and `scripts`. Keep published files minimal via `files`/`.npmignore`.
+* **tsconfig.json** (if TS): enable `strict`, modern `target`; use `module: NodeNext` + `moduleResolution: NodeNext`; emit source maps if you rely on them.
+* **jsconfig.json** (JS + JSDoc): set `checkJs: true` for editor type-checking.
+* **.npmrc**: `engine-strict=true` to enforce runtime version.
+
+## CLI Discipline
+
+* Shebang CLIs (`#!/usr/bin/env node`).
+* Parse `process.argv` deliberately; keep interfaces stable.
+* Separate streams: send **data to stdout**, **diagnostics to stderr**. Exit with **0** on success, **non-zero** on failure.
+
+## Common Pitfalls → Core Solutions
+
+* **Blocking I/O** for big files → use streams/backpressure.
+* **Synthetic `__dirname` deps** in ESM → use `import.meta.url` + `node:path`.
+* **No graceful shutdown** → implement the `SIGTERM` pattern.
+* **Insecure temp paths** → `fs.mkdtemp` with randomised suffix.
+* **Heavy external test stacks** → use `node:test` + `node:assert/strict`.
+
+## Team Hygiene
+
+* Keep functions small and cohesive; avoid god modules.
+* Document public APIs and failure modes; keep PRs focused.
+* Prefer clarity over cleverness; explain deviations in-code.

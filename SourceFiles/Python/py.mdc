@@ -1,0 +1,83 @@
+---
+description: Use when editing any Python file to enforce Pythonic style, PEP 8/257 conventions, idioms, and automated tooling across the repo.
+globs: ["**/*.py"]
+---
+
+# Python Best Practices (Unified Rule)
+
+## Philosophy & Intent
+- Follow the **Zen of Python**: readability, simplicity, explicitness, and practicality guide every decision.
+- Write **Pythonic** code: prefer native idioms that clearly express intent over verbose, cross-language habits.
+
+## Layout & Formatting (PEP 8)
+- **Indentation**: 4 spaces per level; never mix tabs and spaces.
+- **Blank lines**: 2 between top-level defs/classes; 1 between class methods.
+- **Line length**: target **79** for code and **72** for comments/docstrings. Teams may agree on **≤99** where it improves readability.
+- **Line breaks**: prefer implicit continuation inside `()`, `[]`, `{}` over `\`.
+- **Whitespace rules**:
+  - Single spaces around binary operators and comparisons.
+  - No spaces: just inside brackets/parentheses, before commas/colons/semicolons, or before call parentheses (`func (x)` → `func(x)`).
+  - Avoid aligning `=` with extra spaces; use a single space unless a tightly scoped alignment genuinely improves clarity.
+
+## Naming Conventions
+- **snake_case** for functions, methods, variables, and modules; avoid ambiguous single letters like `l`, `O`, `I`.
+- **PascalCase** for classes (`MyService`, `HTTPRequest`).
+- **UPPERCASE_WITH_UNDERSCORES** for constants.
+- Prefer boolean prefixes: `is_`, `has_`, `can_`.
+
+## Idiomatic Python
+- Prefer **iteration helpers**: `enumerate`, `zip`, `range` (not manual indices).
+- Use **comprehensions** (list/dict/set) for transform/filter in one readable expression.
+- Prefer **membership** checks (`in`, `not in`) to manual loops with flags.
+- Use **tuple unpacking** for swaps: `a, b = b, a`.
+- Prefer **`' '.join(parts)`** over string concatenation in loops.
+- Reach for standard-library tools:
+  - `collections.Counter` for counting.
+  - `any()` / `all()` for compound boolean logic.
+
+## Docstrings & Documentation (PEP 257)
+- Put a triple-quoted docstring **immediately after** each module, class, and public function definition.
+- Choose one docstring style for the repo (e.g., **Google** or **NumPy**) and apply it consistently with sections for parameters, returns, and exceptions.
+- Use docstrings to explain **what and why**; keep inline comments for non-obvious **how**.
+
+## Error Handling
+- Raise/propagate **`Exception` subclasses** (not bare strings/numbers).
+- Preserve causal chains (e.g., `raise NewError("…") from err` or `Error(..., cause=err)` as supported).
+- Do not rely on exceptions for expected control flow—model expected failures explicitly.
+
+## Tooling & Automation
+- Use **Black** for formatting (opinionated, fast) and **Ruff** or **Pylint/Flake8** for linting.
+- Prevent rule clashes with `eslint-config-prettier` equivalent for Python? (Not applicable) → rely on Black’s formatting and configure the linter to **ignore stylistic nits Black handles**.
+- Add standard scripts:
+  - `format`: run Black.
+  - `lint`: run Ruff/Pylint.
+  - `lint:fix`: autofix where safe.
+- Integrate tools with **pre-commit hooks** and **CI** to enforce consistency on every change.
+
+## Practical Guidance
+- Prefer small, cohesive functions over large, multi-purpose ones.
+- Optimise for **reader time**: explicit names, narrow scopes, and clear control flow beat clever one-liners.
+- When deviating from a rule, document the rationale briefly (readability and practicality first).
+
+## Examples (Apply When Generating/Refactoring)
+- Replace manual index loops with:
+  ```python
+  for i, item in enumerate(items):
+      ...
+````
+
+* Prefer comprehension:
+
+  ```python
+  squares = [x * x for x in xs if x > 0]
+  ```
+* Membership tests:
+
+  ```python
+  if needle in haystack: ...
+  ```
+* String building:
+
+  ```python
+  msg = " ".join(words)
+  ```
