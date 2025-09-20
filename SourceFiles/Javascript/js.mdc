@@ -1,0 +1,67 @@
+---
+description: Use when editing any JavaScript file to enforce consistent, modern best practices across the project.
+globs: ["**/*.js", "**/*.mjs", "**/*.cjs"]
+---
+
+# JavaScript Best Practices (Unified Rule)
+
+## Variables
+- Default to `const` for values that do not need reassignment; use `let` only when reassignment is intentional.
+- Avoid `var` to prevent hoisting issues and function scope surprises.
+- Treat `const` as immutable binding; mutation of arrays/objects should be deliberate and clear.
+
+## Naming
+- Use `camelCase` for variables, functions, and properties.
+- Use `PascalCase` for classes and constructor functions.
+- Use `CONSTANT_CASE` for global constants that never change.
+
+## Formatting
+- Indent with **2 spaces**, no tabs.
+- Always terminate statements with semicolons to avoid ASI pitfalls.
+- Place one space after keywords (`if`, `for`, `while`) and around operators (`a + b`).
+- Limit lines to ~80 characters; break long expressions after operators and indent wrapped lines consistently.
+
+## Strings
+- Use **single quotes** for simple string literals.
+- Prefer **template literals** for interpolation (`${}`) and multi-line strings.
+- Avoid concatenation (`'a' + b`) when interpolation is clearer.
+
+## Functions
+- Use **arrow functions** for callbacks and inline expressions.
+- Do **not** use arrow functions as object methods or constructors (wrong `this` binding).
+- Keep functions small and single-purpose.
+
+## Destructuring
+- Use object and array destructuring to make used values explicit.
+- Provide sensible defaults in destructuring patterns where appropriate.
+
+## Modules
+- Use **ES Modules** (`import` / `export`) in all new code.
+- Prefer **named exports** for clarity and consistency.
+- Avoid leaking variables into the global scope.
+
+## Error Handling
+- Wrap risky code in `try/catch`; use `async/await` with `try/catch` for asynchronous code.
+- Never silently swallow errors — log with context or rethrow.
+- Define and use custom error types where beneficial.
+- Centralise error handling for predictability.
+
+## Functional Practices
+- Write pure functions with explicit inputs/outputs where possible.
+- Avoid side effects and external state mutation.
+- Use array methods (`map`, `filter`, `reduce`) instead of imperative mutation (`forEach` with side effects).
+
+## Tooling
+- Enforce linting with **ESLint** and formatting with **Prettier**.
+- Extend `eslint-config-prettier` to avoid conflicts.
+- Define `lint`, `lint:fix`, and `format` npm scripts for consistency.
+
+## Testing
+- Write or update tests alongside features or fixes.
+- Keep tests small, focused, and co-located with source when practical.
+- Use clear arrange–act–assert patterns for readability.
+
+## Documentation & Collaboration
+- Document all public APIs with purpose and usage examples.
+- Write descriptive commit messages (`feat`, `fix`, `chore`, `docs`).
+- Keep pull requests small and focused.
