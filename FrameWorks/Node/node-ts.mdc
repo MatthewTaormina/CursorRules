@@ -1,0 +1,130 @@
+---
+description: Use when editing Node + TypeScript code to enforce runtime-safe TS practices specific to Node that go beyond the general JS/TS rules.
+globs: ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts","**/tsconfig.json"]
+---
+
+# Node + TypeScript (Runtime & Build) — Focused Rule
+
+> Scope: Node runtimes (e.g., Node 18/20/22). Adds guidance **not covered** by the base JS/TS rules: NodeNext modules, env typing, process & fs APIs, build outputs, and interop.
+
+## Module System (NodeNext)
+- Use **`"module": "NodeNext"`** and **`"moduleResolution": "NodeNext"`**; prefer **ESM** unless you have a hard requirement for CJS.
+- For file-URL paths in ESM, derive `__dirname`/`__filename` via `import.meta.url` + `node:path`/`node:url`.
+- Avoid mixing ESM and CJS within the same package. If you must interop, expose both via `package.json` `exports` with conditional `"import"`/`"require"`.
+
+## tsconfig (Node Runtime Baseline)
+- Recommended compiler options for Node:
+  ```jsonc
+  {
+    "compilerOptions": {
+      "target": "ES2022",
+      "lib": ["ES2022"],
+      "module": "NodeNext",
+      "moduleResolution": "NodeNext",
+      "strict": true,
+      "noUncheckedIndexedAccess": true,
+      "noImplicitOverride": true,
+      "exactOptionalPropertyTypes": true,
+      "useUnknownInCatchVariables": true,
+      "allowJs": false,
+      "declaration": true,
+      "sourceMap": true,
+      "inlineSources": true,
+      "outDir": "dist",
+      "rootDir": "src",
+      "types": ["node"],
+      "skipLibCheck": true
+    },
+    "include": ["src"]
+  }
+````
+
+* For monorepos, enable `composite`, `incremental`, and **project references**; publish `.d.ts` via `declaration` or a separate `types` build.
+
+## Imports & Types
+
+* Use **`import type`** for type-only imports to keep runtime graphs clean.
+* Prefer **named exports**; avoid default exports in libraries for clearer interop.
+* When importing Node built-ins, use **`node:`** specifiers (e.g. `node:fs`, `node:crypto`) for clarity and tooling.
+
+## Environment Variables & Configuration
+
+* Never read `process.env.X` untyped in app code. Provide a central **`env.d.ts`** + parsing module:
+
+  ```ts
+  // env.d.ts (ambient)
+  declare namespace NodeJS {
+    interface ProcessEnv {
+      NODE_ENV: 'development' | 'test' | 'production';
+      PORT?: `${number}`;
+      // add other keys here
+    }
+  }
+  ```
+* Validate at startup (e.g., simple guards). Keep env access confined to one module; consumers receive typed config.
+
+## Error Handling (Type-Safe)
+
+* Catch as **`unknown`** and **narrow** before use:
+
+  ```ts
+  try { /* ... */ } catch (err: unknown) {
+    if (err instanceof Error) { log(err.message, err.stack); }
+    else { log('Unknown error', { err }); }
+  }
+  ```
+* Model expected failures with discriminated unions/`Result`-like types; reserve exceptions for exceptional paths.
+
+## Async, Streams, and Disposables
+
+* Prefer `async/await`; **do not** forget to handle rejections.
+* Use **`fs/promises`** and `for await ... of` for streamy I/O; propagate `AbortSignal` for cancellation.
+* If using TypeScript 5.2+ features, prefer **`using`** and `Symbol.dispose` patterns behind feature flags only where the runtime supports them.
+
+## Public APIs & Declarations
+
+* Libraries: emit **`.d.ts`** declarations; surface narrow, documented types at the package boundary.
+* Use **`satisfies`** to verify config objects without widening:
+
+  ```ts
+  const routes = { health: '/health', docs: '/docs' } as const satisfies Record<string, `/${string}`>;
+  ```
+
+## Exhaustiveness & Safety
+
+* Use **exhaustive `switch`** with `never` to guard future cases:
+
+  ```ts
+  type Kind = 'ok' | 'err';
+  function handle(k: Kind) {
+    switch (k) {
+      case 'ok': return;
+      case 'err': return;
+      default: const _exhaustive: never = k; return _exhaustive;
+    }
+  }
+  ```
+* Prefer **readonly** modifiers and `as const` where immutability conveys intent.
+
+## Build & Runtime Artifacts
+
+* **Do not** publish sources unless intentional. Ship `dist/` with JS, maps, and types (`types` field in `package.json`).
+* Configure `exports` with clear entry points; avoid deep internal imports from consumers.
+* Enable `--enable-source-maps` for meaningful stack traces in production.
+
+## Testing in Node + TS
+
+* Keep tests in TS, compiled or run via a runner that supports ESM + TS (e.g. `node --test` with a pre-built `dist-test/`), or a zero-config TS runner in dev. Ensure declarations stay accurate.
+
+## Common Pitfalls → Remedies
+
+* **Untyped env access** → add `env.d.ts` and a single config module.
+* **ESM path issues** → derive paths from `import.meta.url`.
+* **Leaky type imports** → use `import type` and re-export types from barrels.
+* **Non-exhaustive unions** → add `never` checks in `switch`/`if` chains.
+* **Publishing TS sources accidentally** → set `files`/`.npmignore` and verify `exports`.
+
+## Team Hygiene
+
+* Keep public types stable; document breaking changes in a CHANGELOG.
+* Prefer clarity over cleverness; explain deviations inline.
