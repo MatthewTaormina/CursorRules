@@ -1,0 +1,123 @@
+---
+description: This rule outlines the four foundational pillars of Object-Oriented Programming (OOP) and their best practices. It covers abstraction, encapsulation, inheritance, and polymorphism to guide the AI in writing well-structured OOP code.
+globs:
+  - "**/*.js"
+  - "**/*.ts"
+  - "**/*.py"
+  - "**/*.java"
+  - "**/*.cs"
+  - "**/*.cpp"
+---
+# The Four Pillars of OOP
+
+This section defines the core concepts of Object-Oriented Programming (OOP) to guide code generation. OOP organizes code around "objects" and is designed to create reusable, modular, and scalable systems.
+
+## 1. Abstraction
+* **Concept:** Hide complex implementation details and show only a simplified interface to the user.
+* **Best Practice:** Design classes with a clear, minimal public interface. The goal is to reduce cognitive load and enhance reusability and maintainability.
+
+## 2. Encapsulation
+* **Concept:** Bundle data (attributes) and the methods that operate on them into a single unit (a class). Control access to the internal state using access modifiers like `private` or `protected`.
+* **Best Practice:** Use public methods (getters and setters) to provide controlled access to an object's internal data. This prevents unauthorized manipulation and leads to a more stable codebase.
+
+## 3. Inheritance
+* **Concept:** Allow a new class to inherit properties and behaviors from an existing class, representing an "is-a" relationship.
+* **Best Practice:** Use inheritance only for true "is-a" relationships where a subclass is a behavioral subtype of its parent. Avoid creating deep or complex class hierarchies, which can be difficult to manage.
+
+## 4. Polymorphism
+* **Concept:** The ability for objects of different classes to be treated as objects of a common superclass, allowing the same method call to produce different behaviors based on the object's type.
+* **Best Practice:** Leverage polymorphism to write flexible and extensible code. This allows you to add new features without modifying existing code that uses the common interface, directly applying the Open/Closed Principle.
+
+---
+
+### Part 2: SOLID Principles and Anti-Patterns Rule
+
+This rule focuses on the SOLID principles, which are crucial for writing clean, maintainable, and scalable OOP code. It also addresses common anti-patterns to avoid.
+
+```mdc
+---
+description: This rule provides a blueprint for robust OOP design by covering the SOLID principles and common anti-patterns like the God Object. It emphasizes loose coupling and high cohesion.
+globs:
+  - "**/*.js"
+  - "**/*.ts"
+  - "**/*.py"
+  - "**/*.java"
+  - "**/*.cs"
+  - "**/*.cpp"
+---
+# The SOLID Principles and Anti-Patterns
+
+This rule focuses on the **SOLID principles**, which provide a practical blueprint for creating clean, scalable code. Adhering to these principles helps achieve loose coupling and high cohesion.
+
+## 1. The SOLID Principles
+
+### 1.1. Single Responsibility Principle (SRP)
+* **Core Idea:** A class should have one, and only one, reason to change.
+* **Actionable Takeaway:** Break down complex classes into smaller, more focused ones. A class should not handle unrelated tasks, such as both data calculation and data output.
+
+### 1.2. Open/Closed Principle (OCP)
+* **Core Idea:** Software entities should be open for extension but closed for modification.
+* **Actionable Takeaway:** When adding new behavior, create a new class that extends the existing one rather than modifying the original code.
+
+### 1.3. Liskov Substitution Principle (LSP)
+* **Core Idea:** Subtypes must be substitutable for their base types without changing the program's correctness.
+* **Actionable Takeaway:** Ensure a subclass can be used in any context where its parent is used. This is a key quality check for inheritance.
+
+### 1.4. Interface Segregation Principle (ISP)
+* **Core Idea:** Clients should not be forced to depend on interfaces they don't use.
+* **Actionable Takeaway:** Prefer many small, specific interfaces over a single large, "fat" one to avoid unnecessary dependencies.
+
+### 1.5. Dependency Inversion Principle (DIP)
+* **Core Idea:** High-level modules should not depend on low-level modules; both should depend on abstractions.
+* **Actionable Takeaway:** Use interfaces and dependency injection to decouple modules. This makes the code more flexible, reusable, and testable.
+
+## 2. Common Anti-Patterns
+
+### 2.1. The "God Object"
+* **Definition:** A class that takes on a disproportionate amount of responsibility, violating the Single Responsibility Principle.
+* **Solution:** Refactor the God Object by breaking it down into smaller, more focused classes, each with a single responsibility.
+
+### 2.2. Tight Coupling
+* **Definition:** A state where modules have a high degree of interdependence. A change in one module is likely to affect others.
+* **Solution:** Achieve **loose coupling** by using abstractions and well-defined interfaces.
+
+---
+
+### Part 3: Design Patterns and Alternatives Rule
+
+This rule focuses on practical design strategies like using composition over inheritance and understanding when other paradigms, such as functional programming, might be a better choice.
+
+```mdc
+---
+description: This rule covers practical OOP design concepts, including favoring composition over inheritance and understanding when to use OOP versus other paradigms like functional programming.
+globs:
+  - "**/*.js"
+  - "**/*.ts"
+  - "**/*.py"
+  - "**/*.java"
+  - "**/*.cs"
+  - "**/*.cpp"
+---
+# Practical Design Patterns and Alternatives
+
+This rule provides guidance on applying OOP principles through common design patterns and discusses when to consider alternative paradigms.
+
+## 1. Composition Over Inheritance
+
+* **Principle:** Favor code reuse by containing instances of other classes (**has-a** relationship) rather than inheriting from a base class (**is-a** relationship).
+* **Advantages:** This approach fosters loose coupling and flexibility, making systems more adaptable and maintainable.
+* **Example:** A `Car` object can be composed of an `IEngine` object, allowing the engine to be swapped without changing the core `Car` class.
+
+## 2. Design Patterns
+* **Creational Patterns:** Focus on object creation mechanisms. Examples include the **Singleton Pattern**, which ensures a class has only one instance, and the **Factory Method Pattern**, which lets subclasses decide which class to instantiate.
+* **Structural Patterns:** Deal with how classes and objects are composed. The **Decorator Pattern** can attach new responsibilities to an object dynamically at runtime, while the **Composite Pattern** organizes objects into tree structures to represent part-whole hierarchies.
+* **Behavioral Patterns:** Identify common communication patterns between objects. The **Observer Pattern** defines a one-to-many dependency, and the **Strategy Pattern** encapsulates a family of algorithms, making them interchangeable.
+
+## 3. The Broader Context: Trade-offs and Alternatives
+
+* **When to use OOP:** It is ideal for large, complex systems that require modularity and a clear separation of concerns.
+* **When to avoid OOP:** It can introduce unnecessary complexity and overhead for small or computationally intensive applications. In these cases, a **functional programming (FP)** approach might be more suitable.
+* **OOP vs. FP:**
+    * **OOP** bundles state and behavior, often relying on mutable state.
+    * **FP** emphasizes statelessness and immutability, using pure functions to transform data.
+    * Modern languages often support a hybrid approach, combining the best of both paradigms.
