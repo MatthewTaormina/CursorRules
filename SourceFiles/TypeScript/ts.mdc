@@ -1,0 +1,82 @@
+---
+description: Use when editing any TypeScript file to enforce strict, modern, and maintainable TypeScript practices across the repo.
+globs: ["**/*.ts", "**/*.tsx"]
+---
+
+# TypeScript Best Practices (Unified Rule)
+
+## Compiler Strictness
+- Enable `"strict": true` and keep it non-negotiable for new work.
+- Turn on: `noImplicitAny`, `strictNullChecks`, `noUnusedLocals`, `noUnusedParameters`, `noImplicitReturns`, `noFallthroughCasesInSwitch`, `forceConsistentCasingInFileNames`.
+- Treat relaxations as temporary and documented with a clear migration plan.
+
+## any vs unknown
+- Avoid `any` in production code; prefer `unknown` and narrow via runtime checks (`typeof`, `Array.isArray`, user-defined predicates).
+- Set `useUnknownInCatchVariables` and narrow caught errors before use.
+
+## Inference vs Annotation
+- Favour inference for simple locals; **require explicit parameter and return types** for exported functions, public APIs, and complex generics.
+- Keep function signatures self-documenting; avoid leaking internal types.
+
+## Data Modelling: type vs interface
+- Default to `type` for versatility (unions/intersections, mapped/templated types).
+- Use `interface` when you need declaration merging or a class `implements` public contract.
+- Prefer explicit composition over declaration-merging “magic” unless intentionally used.
+
+## Enums & Alternatives
+- Prefer **union string literals** (optionally `as const`) over runtime `enum` to avoid bundle bloat and reverse mapping quirks.
+- If a runtime object is necessary, justify a standard `enum`; otherwise consider `const enum` with awareness of tooling constraints.
+
+## Generics
+- Use constraints (`<T extends X>`) to expose available members and improve DX.
+- Provide sensible default generic parameters.
+- Keep generic names short but meaningful (`TItem`, `TError`) and avoid over-generic APIs.
+
+## Imports & Exports
+- Prefer **named exports**; keep import style consistent across the codebase.
+- Group imports: stdlib/node, third-party, then internal, with blank lines between groups.
+- Avoid brittle path aliases unless project tooling guarantees portability; keep relative imports readable (limit `../../..` depth by sensible structure).
+
+## Naming Conventions
+- `camelCase` for variables/functions; `PascalCase` for types, interfaces, classes; `SCREAMING_SNAKE_CASE` for constants.
+- Boolean names start with `is/has/can`.
+- File names: `kebab-case`.
+- Don’t prefix interfaces with `I` or private members with `_`; use access modifiers.
+
+## Comments & JSDoc
+- Write comments to explain **why**, not “what the code does”.
+- Add JSDoc to all top-level exports (functions, classes, types). Place before decorators.
+- Keep examples minimal and copy-pastable.
+
+## Error Handling
+- Throw `Error` (or subclasses) only; never throw bare strings/numbers.
+- Preserve stack traces when rethrowing (e.g., `new Error(msg, { cause })`).
+- Use constant error messages for log grouping; attach variable data as metadata.
+- Don’t use exceptions for expected control flow; model expected failures via result types.
+- Create/standardise an `ensureError()` helper to normalise unknown throws.
+
+## Functional & Immutable Tendencies
+- Prefer pure functions; avoid shared mutable state.
+- Use non-mutating array/object utilities (spread, `map`, `filter`, `reduce`) by default.
+- Mutations must be deliberate, localised, and justified.
+
+## Testing
+- Test **behaviour**, not implementation details.
+- Keep tests small and independent; cover edge cases and error paths.
+- Co-locate tests where the stack allows; adopt clear arrange–act–assert structure.
+- Configure TypeScript-friendly runners (e.g., Jest + `ts-jest`) or `ts-node` for tests.
+
+## Formatting, Linting, and Typed Rules
+- Use **Prettier** for formatting; **ESLint** for quality; add `eslint-config-prettier` to avoid rule clashes.
+- Adopt `typescript-eslint` with type-aware configs (e.g., `recommended-type-checked`, `stylistic-type-checked`) where performance permits.
+- Provide npm scripts: `"format"`, `"lint"`, `"lint:fix"`, and integrate into CI.
+
+## tsconfig Baseline (reference)
+- Target modern runtime (`"target": "es2020"`, `"module": "es2020"`, `"moduleResolution": "node"`), include DOM libs if browser.
+- `"esModuleInterop": true`, `"resolveJsonModule": true`, `"sourceMap": true`, structured `"rootDir": "src"`, `"outDir": "dist"`.
+- Keep `"skipLibCheck": true` unless you need stricter vendor type validation.
+
+## House Style & Team Hygiene
+- Keep functions small and cohesive; avoid god objects and grab-bag utils.
+- Document public APIs with examples; maintain a CHANGELOG when you alter types.
+- Write clear commit messages (`feat`, `fix`, `refactor`, `docs`, `test`, `chore`) and keep PRs focused.
