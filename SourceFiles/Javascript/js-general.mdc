@@ -1,0 +1,59 @@
+---
+description: A comprehensive guide to modern JavaScript best practices, covering variable declaration, naming conventions, coding style, and module-based architecture to promote clean, maintainable, and collaborative code.
+globs:
+  - "**/*.js"
+  - "**/*.ts"
+---
+# Modern JavaScript Best Practices
+
+This rule synthesizes industry-standard best practices to guide the generation of clean, predictable, and maintainable JavaScript code[cite: 155, 162].
+
+## 1. Foundational Principles
+
+### 1.1. Variable Declaration: `const` and `let`
+* **Principle:** Default to `const` and use `let` only for variables that require reassignment[cite: 171]. Avoid using the legacy `var` keyword in all new code due to its problematic function-level scoping and confusing hoisting behavior[cite: 172, 173, 174].
+* **Rationale:** `let` and `const` are block-scoped, which makes a variable's accessibility more predictable and prevents unintended variable leakage[cite: 175, 176]. The use of `const` promotes immutability by default, which helps prevent accidental reassignments and signals a developer's intent[cite: 177].
+* **Note:** `const` prevents reassignment of the variable binding itself, but it does not make the *value* immutable[cite: 179]. Properties of an object or elements of an array declared with `const` can still be modified[cite: 180].
+
+### 1.2. Naming Conventions: Clarity Above All
+* **Principle:** Use naming conventions as a form of self-documentation to convey purpose and intent[cite: 193].
+    * **`camelCase`**: For variables, functions, and object properties[cite: 195].
+    * **`PascalCase`**: For constructors and classes[cite: 196].
+    * **`CONSTANT_CASE`**: For global, unchangeable constants[cite: 197].
+* **Rationale:** Consistent naming makes code easier to read and reduces the cognitive load for developers[cite: 193, 194].
+
+## 2. Core Coding Style and Formatting
+
+### 2.1. Semicolons
+* **Principle:** Every statement must be terminated with a semicolon[cite: 231].
+* **Rationale:** While the language supports Automatic Semicolon Insertion (ASI), relying on it can lead to unpredictable behavior and subtle, hard-to-find bugs[cite: 232, 233, 234, 235]. Explicit semicolons provide a significant gain in code predictability and debugging ease, especially for teams with mixed experience levels[cite: 236].
+
+### 2.2. Quotes and Template Literals
+* **Principle:** Use single quotes (`'`) for string literals[cite: 245]. Use template literals (`` ` ``) for strings that contain variables or span multiple lines[cite: 246, 248].
+* **Rationale:** Template literals are a powerful feature that makes string interpolation and multiline strings significantly more readable than older methods involving string concatenation or escape characters[cite: 247].
+
+## 3. Modern Language Features
+
+### 3.1. Arrow Functions
+* **Principle:** Use arrow functions for anonymous functions and callbacks[cite: 274].
+* **Rationale:** Arrow functions do not have their own `this` binding; they inherit it from the parent lexical scope[cite: 275, 276]. This simplifies `this` context handling and eliminates the need for workarounds like `const self = this`[cite: 277, 278].
+* **Avoid:** Do not use arrow functions as object methods or constructors, as their `this` context will not behave as expected[cite: 280, 281, 282].
+
+### 3.2. Destructuring
+* **Principle:** Use destructuring assignment to extract values from objects and arrays[cite: 293].
+* **Rationale:** Destructuring improves readability by explicitly declaring which properties or elements a block of code will use, reducing repetitive boilerplate[cite: 293].
+
+### 3.3. Modules
+* **Principle:** Use ES module syntax (`import`/`export`) for all new code to organize and share code[cite: 307].
+* **Rationale:** Modules run in their own private scope, which is a significant improvement over the legacy practice of using global variables[cite: 305]. Using named exports is preferred over default exports to improve name consistency across a project[cite: 309].
+
+## 4. Robustness and Maintainability
+
+### 4.1. Error Handling
+* **Principle:** Use `try...catch` for synchronous errors and `.catch()` on promises or `async/await` with `try...catch` for asynchronous operations[cite: 325].
+* **Avoid:** Never suppress exceptions by catching an error and doing nothing, as this leads to silent failures[cite: 326].
+* **Best Practice:** Always log errors with enough contextual information to understand the problem[cite: 333].
+
+### 4.2. Functional Principles
+* **Principle:** Strive to write small, pure functions that do not mutate data outside their scope[cite: 346, 347].
+* **Rationale:** This approach minimizes side effects, making code more predictable and easier to test[cite: 346, 347]. For data transformations, use immutable array methods like `map()`, `filter()`, and `reduce()` over loops that mutate the original array[cite: 348].
